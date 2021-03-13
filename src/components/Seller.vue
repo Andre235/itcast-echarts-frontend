@@ -32,7 +32,7 @@
        * 初始化echarts实例对象
        */
       initChart() {
-        this.chartInstance = this.$echarts.init(this.$refs.seller)
+        this.chartInstance = this.$echarts.init(this.$refs.seller, 'chalk')
         // echarts实例对象对鼠标事件监听(清除定时器)
         this.chartInstance.on('mouseover', () => clearInterval(this.timerId))
         // echarts实例对象对鼠标事件监听(开启定时器)
@@ -64,6 +64,33 @@
         const sellerNames = showData.map(item => item.name)
         const sellerValues = showData.map(item => item.value)
         const option = {
+          title: {
+            text: '商家销售统计',
+            textStyle: {
+              fontSize: 66
+            },
+            left: 20,
+            top: 20
+          },
+          tooltip: {
+            trigger: 'axis',
+            axisPointer: {
+              type: 'line',
+              z: 0, // 调整背景颜色的层级
+              lineStyle: {
+                width: 66,
+                color: '#2D3443'
+              }
+            }
+          },
+          // 直接坐标系通用配置
+          grid: {
+            top: '20%', //边距
+            left: '3%',
+            right: '6%',
+            bottom: '3%',
+            containLabel: true // 距离包含坐标轴上的文字
+          },
           xAxis: {
             type: 'value'
           },
@@ -74,7 +101,33 @@
           series: [
             {
               type: 'bar',
-              data: sellerValues
+              data: sellerValues,
+              barWidth:66, // 柱子宽度
+              label: { // 柱子文字
+                show: true,
+                position: 'right',
+                textStyle: {
+                  color: 'white'
+                }
+              },
+              itemStyle: { // 柱状图的每一个柱子条目
+                barBorderRadius: [0, 33, 33, 0], // 柱子圆角控制 [左上角圆角半径 右上角圆角半径 右下角 左下角]
+                // 颜色渐变
+                // 指明颜色渐变方向  两个点的坐标分别是(0,0) --> (1, 0)，因此颜色渐变的方向是从左到右
+                // 指明不同百分比的颜色值
+                color: new this.$echarts.graphic.LinearGradient(0, 0, 1, 0, [
+                  // 0% 状态下的颜色值
+                  {
+                    offset: 0,
+                    color: '#5052EE'
+                  },
+                  // 100% 状态下的颜色值
+                  {
+                    offset: 1,
+                    color: '#AB6EE5'
+                  }
+                ])
+              }
             }
           ]
         };
