@@ -14,12 +14,18 @@
       return {
         chartInstance: null,
         data: null,
+        currentPage: 1, // 当前显示的页数
+        totalPage: 0, // 总页数
+        timerId: null // 定时器ID
       }
     },
     // Vue生命周期：在mounted方法中，DOM元素加载完成
     mounted() {
       this.initChart();
       this.getData();
+    },
+    destroyed() {
+      clearInterval(this.timerId)
     },
     methods: {
       /**
@@ -35,7 +41,11 @@
       async getData() {
         const {data: result} = await this.$http.get('seller')
         this.data = result;
-        console.log(result);
+        // 将数据从小到大排序
+        this.data.sort((a, b) => a.value - b.value)
+        // 每5个元素显示一页
+        this.totalPage = this.data.length % 5 === 0 ? this.data.length / 5 : this.data.length / 5 + 1;
+        console.log(this.totalPage);
         this.updateChart();
       },
 
@@ -43,10 +53,12 @@
        * 更新图表
        */
       updateChart() {
-        const sellerNames = this.data.map(item => item.name)
-        // console.log(sellerNames);
-        const sellerValues = this.data.map(item => item.value)
-        // console.log(sellerValues);
+        const start = (this.currentPage - 1) * 5;
+        const end = this.currentPage * 5;
+        const showData = this.data.slice(start, end);
+
+        const sellerNames = showData.map(item => item.name)
+        const sellerValues = showData.map(item => item.value)
         const option = {
           xAxis: {
             type: 'value'
@@ -62,7 +74,26 @@
             }
           ]
         };
-        this.chartInstance.setOption(option)
+        this.chartInstance.setOption(option);
+        // 启动定时器
+        this.startInterval();
+      },
+
+      /**
+       * 启动定时器
+       */
+      startInterval() {
+        if(this.timerId) {
+          clearInterval(this.timerId)
+        }
+        this.timerId = setInterval(() => {
+          this.currentPage ++;
+          if(this.currentPage > this.totalPage) {
+            this.currentPage = 1;
+          }
+          console.log('this.currentPage: ' + this.currentPage);
+          this.updateChart();
+        }, 3000)
       }
     }
   }
