@@ -33,6 +33,10 @@
        */
       initChart() {
         this.chartInstance = this.$echarts.init(this.$refs.seller)
+        // echarts实例对象对鼠标事件监听(清除定时器)
+        this.chartInstance.on('mouseover', () => clearInterval(this.timerId))
+        // echarts实例对象对鼠标事件监听(开启定时器)
+        this.chartInstance.on('mouseout', () => this.startInterval())
       },
 
       /**
