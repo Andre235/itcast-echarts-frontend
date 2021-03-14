@@ -35,12 +35,16 @@
        * 初始化图表
        */
       initChart() {
-        this.chartInstance = this.$echarts.int(this.$refs.trend)
+        this.chartInstance = this.$echarts.init(this.$refs.trend)
         const initOption = {
-
+          xAxis: {
+            type: 'category'
+          },
+          yAxis: {
+            type: 'value'
+          }
         }
         this.chartInstance.setOption(initOption)
-
       },
 
       /**
@@ -48,9 +52,10 @@
        */
       async getData() {
         // 从服务端查询数据
-        await this.$http.get();
+        const {data: result} = await this.$http.get('trend');
+        console.log(result);
         // allData赋值
-        this.allData = null
+        this.allData = result
         this.updateChart()
       },
 
@@ -58,7 +63,30 @@
        * 更新图表
        */
       updateChart() {
-        const dataOption = null
+        const xAxisData = this.allData.common.month
+        console.log(xAxisData);
+        // y轴数据
+        const valueArray = this.allData.map.data
+        const seriesArray = valueArray.map(item => {
+          return {
+            name: item.name,
+            type: 'line',
+            data: item.data,
+            stack: 'map', // 设置折线图效果为堆叠图
+          }
+        })
+        // 图例数组
+        const legendArray = valueArray.map(item => item.name)
+        console.log(legendArray);
+        const dataOption = {
+          xAxis: {
+            data: xAxisData
+          },
+          legend: {
+            data: legendArray
+          },
+          series: seriesArray
+        }
         this.chartInstance.setOption(dataOption)
       },
 
