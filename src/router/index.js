@@ -5,9 +5,14 @@ Vue.use(VueRouter)
 
 const routes = [
   {
-    path: '/sellerPage',
-    name: '/sellerPage',
+    path: '/seller',
+    name: '销售统计',
     component: () => import('views/SellerPage.vue')
+  },
+  {
+    path: '/trend',
+    name: '销售趋势',
+    component: () => import('views/TrendPage.vue')
   }
 ]
 
