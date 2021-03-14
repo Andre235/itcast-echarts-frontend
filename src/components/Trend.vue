@@ -35,13 +35,29 @@
        * 初始化图表
        */
       initChart() {
-        this.chartInstance = this.$echarts.init(this.$refs.trend)
+        this.chartInstance = this.$echarts.init(this.$refs.trend, 'chalk')
         const initOption = {
           xAxis: {
-            type: 'category'
+            type: 'category',
+            boundaryGap: false // X轴是否需要间隙(紧挨着Y坐标轴)
           },
           yAxis: {
             type: 'value'
+          },
+          tooltip: {  // 工具提示
+            trigger: 'axis'
+          },
+          legend: {
+            left: 20,
+            top: '15%',
+            icon: 'circle' // 图例图标设置为圆形
+          },
+          grid: {
+            left: '3%',
+            top: '35%',
+            right: '4%',
+            bottom: '1%',
+            containLabel: true // 把坐标轴的文字也控制在偏移的大小范围内
           }
         }
         this.chartInstance.setOption(initOption)
@@ -63,16 +79,46 @@
        * 更新图表
        */
       updateChart() {
+        // 半透明的颜色值
+        const colorArr1 = [
+          'rgba(11, 168, 44, 0.5)',
+          'rgba(44, 110, 255, 0.5)',
+          'rgba(22, 242, 217, 0.5)',
+          'rgba(254, 33, 30, 0.5)',
+          'rgba(250, 105, 0, 0.5)'
+        ]
+        // 全透明的颜色值
+        const colorArr2 = [
+          'rgba(11, 168, 44, 0)',
+          'rgba(44, 110, 255, 0)',
+          'rgba(22, 242, 217, 0)',
+          'rgba(254, 33, 30, 0)',
+          'rgba(250, 105, 0, 0)'
+        ]
+
         const xAxisData = this.allData.common.month
-        console.log(xAxisData);
         // y轴数据
         const valueArray = this.allData.map.data
-        const seriesArray = valueArray.map(item => {
+        const seriesArray = valueArray.map((item, index) => {
           return {
             name: item.name,
             type: 'line',
             data: item.data,
             stack: 'map', // 设置折线图效果为堆叠图
+            areaStyle: {
+              color: new this.$echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                // 0% 状态下的颜色值
+                {
+                  offset: 0,
+                  color: colorArr1[index]
+                },
+                // 100% 状态下的颜色值
+                {
+                  offset: 1,
+                  color: colorArr2[index]
+                }
+              ])
+            },
           }
         })
         // 图例数组
