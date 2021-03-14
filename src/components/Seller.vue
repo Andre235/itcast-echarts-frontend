@@ -1,7 +1,6 @@
 <template>
   <div class="com-container">
     <div class="com-chart" ref="seller">
-
     </div>
   </div>
 
@@ -23,9 +22,15 @@
     mounted() {
       this.initChart();
       this.getData();
+      // 给windows添加resize事件监听器
+      window.addEventListener("resize", this.adapterScreen)
+      // 首次加载页面的时候，需要我们手动进行屏幕适配
+      this.adapterScreen()
     },
     destroyed() {
       clearInterval(this.timerId)
+      // 当组件销毁的时候移除resize事件监听器，(防止内存泄漏)
+      window.removeEventListener('resize', this.adapterScreen)
     },
     methods: {
       /**
@@ -33,37 +38,8 @@
        */
       initChart() {
         this.chartInstance = this.$echarts.init(this.$refs.seller, 'chalk')
-        // echarts实例对象对鼠标事件监听(清除定时器)
-        this.chartInstance.on('mouseover', () => clearInterval(this.timerId))
-        // echarts实例对象对鼠标事件监听(开启定时器)
-        this.chartInstance.on('mouseout', () => this.startInterval())
-      },
-
-      /**
-       * 获取服务器数据
-       */
-      async getData() {
-        const {data: result} = await this.$http.get('seller')
-        this.data = result;
-        // 将数据从小到大排序
-        this.data.sort((a, b) => a.value - b.value)
-        // 每5个元素显示一页
-        this.totalPage = this.data.length % 5 === 0 ? this.data.length / 5 : this.data.length / 5 + 1;
-        console.log(this.totalPage);
-        this.updateChart();
-      },
-
-      /**
-       * 更新图表
-       */
-      updateChart() {
-        const start = (this.currentPage - 1) * 5;
-        const end = this.currentPage * 5;
-        const showData = this.data.slice(start, end);
-
-        const sellerNames = showData.map(item => item.name)
-        const sellerValues = showData.map(item => item.value)
-        const option = {
+        // 配置初始化Option
+        const initOption = {
           title: {
             text: '商家销售统计',
             textStyle: {
@@ -95,13 +71,11 @@
             type: 'value'
           },
           yAxis: {
-            type: 'category',
-            data: sellerNames
+            type: 'category'
           },
           series: [
             {
               type: 'bar',
-              data: sellerValues,
               barWidth:66, // 柱子宽度
               label: { // 柱子文字
                 show: true,
@@ -130,8 +104,51 @@
               }
             }
           ]
+        }
+        this.chartInstance.setOption(initOption)
+
+        // echarts实例对象对鼠标事件监听(清除定时器)
+        this.chartInstance.on('mouseover', () => clearInterval(this.timerId))
+        // echarts实例对象对鼠标事件监听(开启定时器)
+        this.chartInstance.on('mouseout', () => this.startInterval())
+      },
+
+      /**
+       * 获取服务器数据
+       */
+      async getData() {
+        const {data: result} = await this.$http.get('seller')
+        this.data = result;
+        // 将数据从小到大排序
+        this.data.sort((a, b) => a.value - b.value)
+        // 每5个元素显示一页
+        this.totalPage = this.data.length % 5 === 0 ? this.data.length / 5 : this.data.length / 5 + 1;
+        console.log(this.totalPage);
+        this.updateChart();
+      },
+
+      /**
+       * 更新图表
+       */
+      updateChart() {
+        const start = (this.currentPage - 1) * 5;
+        const end = this.currentPage * 5;
+        const showData = this.data.slice(start, end);
+
+        const sellerNames = showData.map(item => item.name)
+        const sellerValues = showData.map(item => item.value)
+        // dataOption只配置数据项
+        const dataOption = {
+          yAxis: {
+            data: sellerNames
+          },
+          series: [
+            {
+              data: sellerValues
+            }
+          ]
         };
-        this.chartInstance.setOption(option);
+        this.chartInstance.setOption(dataOption);
         // 启动定时器
         this.startInterval();
       },
@@ -148,9 +165,42 @@
           if(this.currentPage > this.totalPage) {
             this.currentPage = 1;
           }
-          console.log('this.currentPage: ' + this.currentPage);
           this.updateChart();
-        }, 3000)
+        }, 1500)
+      },
+
+      /**
+       * 当浏览器的大小发生变化时，会调用该方法来完成屏幕的适配
+       */
+      adapterScreen() {
+        console.log(this.$refs.seller.offsetWidth);
+        const fontSize = this.$refs.seller.offsetWidth / 100 * 3.6
+        // 和分辨率大小相关的配置
+        const adapterOption = {
+          title: {
+            textStyle: {
+              fontSize: fontSize
+            }
+          },
+          tooltip: {
+            axisPointer: {
+              lineStyle: {
+                width: fontSize,
+              }
+            }
+          },
+          series: [
+            {
+              barWidth: fontSize, // 柱子宽度
+              itemStyle: { // 柱状图的每一个柱子条目
+                barBorderRadius: [0, fontSize / 2, fontSize / 2, 0], // 柱子圆角控制 [左上角圆角半径 右上角圆角半径 右下角 左下角]
+              }
+            }
+          ]
+        }
+        this.chartInstance.setOption(adapterOption)
+        // 手动调用图表的resize方法，才能生效
+        this.chartInstance.resize()
       }
     }
   }
