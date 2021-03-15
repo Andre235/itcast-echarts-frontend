@@ -23,6 +23,11 @@ const routes = [
     path: '/rank',
     name: '销售排行',
     component: () => import('views/RankPage.vue')
+  },
+  {
+    path: '/hot',
+    name: '热销商品',
+    component: () => import('views/HotPage.vue')
   }
 ]
 
