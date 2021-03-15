@@ -1,6 +1,6 @@
 <template>
   <div class="com-container">
-    <div class="com-chart" ref="chinaMap" :style="{width: '100%', height: '100%'}">
+    <div class="com-chart" ref="chinaMap">
     </div>
   </div>
 </template>
@@ -37,13 +37,29 @@
        * 初始化图表
        */
       async initChart() {
-        this.chartInstance = this.$echarts.init(this.$refs.chinaMap)
+        this.chartInstance = this.$echarts.init(this.$refs.chinaMap, 'chalk')
         // 注册地图数据
         this.$echarts.registerMap('china', chinaMap)
         const initOption = {
+          title: {
+            text: '▎商家地图分布',
+            left: 20,
+            top: 20,
+          },
           geo: {
             type: 'map',
-            map: 'china' // 地图矢量数据
+            map: 'china', // 地图矢量数据
+            top: '5%',
+            bottom: '5%',
+            itemStyle: {
+              areaColor: '#2E72BF',
+              borderColor: '#333',
+            },
+          },
+          legend: {
+            left: '5%',
+            bottom: '5%',
+            orient: 'vertical'
           }
         }
         this.chartInstance.setOption(initOption)
@@ -69,6 +85,10 @@
           // return的这个对象就代表这个类别下的散点数据
           return {
             type: 'effectScatter', // 涟漪类型散点
+            rippleEffect: { //控制涟漪效果
+              scale: 10, // 涟漪缩放大小
+              brushType: 'stroke' //空心涟漪效果
+            },
             name: item.name,
             data: item.children,
             coordinateSystem: 'geo', // 如果想要在地图中显示散点数据，我们需要给散点图添加此配置
@@ -89,7 +109,22 @@
        * 适配屏幕分辨率
        */
       adaptScreen() {
-        const adapterOption = {}
+        const titleFontSize = this.$refs.chinaMap.offsetWidth / 100 * 3.6
+        const adapterOption = {
+          title: {
+            textStyle: {
+              fontSize: titleFontSize,
+            }
+          },
+          legend: {
+            itemWidth: titleFontSize / 3,
+            itemHeight: titleFontSize / 3,
+            itemGap: titleFontSize / 3,
+            textStyle: {
+              fontSize: titleFontSize / 3
+            }
+          }
+        }
         this.chartInstance.setOption(adapterOption)
 
         // 手动对echarts实例对象进行resize
