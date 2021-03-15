@@ -15,6 +15,8 @@
         allData: null
       }
     },
+    computed: {
+    },
     mounted() {
       this.initChart()
       this.getData()
@@ -34,13 +36,28 @@
        * 初始化图表
        */
       initChart() {
-        this.chartInstance = this.$echarts.init(this.$refs.rank)
+        this.chartInstance = this.$echarts.init(this.$refs.rank, 'chalk')
         const initOption = {
           xAxis: {
             type: 'category' // 类目轴
           },
           yAxis: {
             type: 'value' // 数值型
+          },
+          title: {
+            text: '▎地区销售排行',
+            left: 20,
+            top: 20
+          },
+          grid: {
+            top: '40%',
+            left: '5%',
+            right: '5%',
+            bottom: '5%',
+            containLabel: true
+          },
+          tooltip: {
+            show: true
           },
           series: [
             {
@@ -66,6 +83,12 @@
        * 更新图表
        */
       updateChart() {
+        const colorArr = [
+          ['#0BA82C', '#4FF778'],
+          ['#2E72BF', '#23E5E5'],
+          ['#5052EE', '#AB6EE5']
+        ]
+
         const provinceArray = this.allData.map(item => item.name)
         console.log(provinceArray);
         const valueArray = this.allData.map(item => item.value)
@@ -77,7 +100,29 @@
           },
           series: [
             {
-              data: valueArray
+              data: valueArray,
+              itemStyle: {
+                color: arg => {
+                  let targetColorArr = null
+                  if (arg.value > 300) {
+                    targetColorArr = colorArr[0]
+                  } else if (arg.value > 200) {
+                    targetColorArr = colorArr[1]
+                  } else {
+                    targetColorArr = colorArr[2]
+                  }
+                  return new this.$echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                    {
+                      offset: 0,
+                      color: targetColorArr[0]
+                    },
+                    {
+                      offset: 1,
+                      color: targetColorArr[1]
+                    }
+                  ])
+                }
+              }
             }
           ]
         }
@@ -93,6 +138,16 @@
 
         // 手动对echarts实例对象进行resize
         this.chartInstance.resize()
+      },
+
+      getColorByValue(value) {
+        if(value > 300) {
+          return 'red'
+        } else if(value > 200) {
+          return 'blue'
+        } else {
+          return 'green'
+        }
       }
     }
   }
