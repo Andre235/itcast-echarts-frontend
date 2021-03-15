@@ -1,8 +1,15 @@
 <template>
   <div class="com-container">
-    <div class="com-chart" ref="trend">
-
+    <div class="title" :style="titleStyle">
+      <span>{{showTitle}}</span>
+      <span class="iconfont title-icon" :style="titleStyle" @click="showChoice = !showChoice">&#xe6eb;</span>
+      <div class="select-con" v-show="showChoice">
+        <div class="select-item" v-for="item in selectTypes" :key="item.key" @click="handleSelectType(item)">
+          {{item.text}}
+        </div>
+      </div>
     </div>
+    <div class="com-chart" ref="trend"/>
   </div>
 </template>
 
@@ -12,8 +19,31 @@
     data() {
       return {
         chartInstance: null,
-        allData: null
-
+        allData: null,
+        showChoice: false, // 可选项数据
+        selectedTypeKey: 'map', // 默认选中的图表数据类型的键
+        titleFontSize: 0, // 标题字体的大小
+      }
+    },
+    computed: {
+      selectTypes() {
+        if (!this.allData) {
+          return []
+        } else {
+          return this.allData.type.filter(item => item.key !== this.selectedTypeKey)
+        }
+      },
+      showTitle() {
+        if(!this.allData){
+          return ''
+        }else {
+          return this.allData[this.selectedTypeKey].title
+        }
+      },
+      titleStyle() {
+        return {
+          fontSize: this.titleFontSize + 'px'
+        }
       }
     },
     mounted() {
@@ -31,6 +61,15 @@
     },
 
     methods: {
+      /**
+       * 改变选中的数据类型
+       */
+      handleSelectType(item) {
+        this.selectedTypeKey = item.key
+        this.updateChart()
+        this.showChoice = false
+      },
+
       /**
        * 初始化图表
        */
@@ -98,13 +137,13 @@
 
         const xAxisData = this.allData.common.month
         // y轴数据
-        const valueArray = this.allData.map.data
+        const valueArray = this.allData[this.selectedTypeKey].data
         const seriesArray = valueArray.map((item, index) => {
           return {
             name: item.name,
             type: 'line',
             data: item.data,
-            stack: 'map', // 设置折线图效果为堆叠图
+            stack: this.selectedTypeKey, // 设置折线图效果为堆叠图
             areaStyle: {
               color: new this.$echarts.graphic.LinearGradient(0, 0, 0, 1, [
                 // 0% 状态下的颜色值
@@ -123,7 +162,6 @@
         })
         // 图例数组
         const legendArray = valueArray.map(item => item.name)
-        console.log(legendArray);
         const dataOption = {
           xAxis: {
             data: xAxisData
@@ -140,7 +178,18 @@
        * 适配屏幕分辨率
        */
       adaptScreen() {
-        const adapterOption = null
+        // 标题的大小
+        this.titleFontSize = this.$refs.trend.offsetWidth / 100 * 3.6;
+        const adapterOption = {
+          legend: {
+            itemWidth: this.titleFontSize,
+            itemHeight: this.titleFontSize,
+            itemGap: this.titleFontSize,
+            textStyle: {
+              fontSize: this.titleFontSize / 2
+            }
+          }
+        }
         this.chartInstance.setOption(adapterOption)
 
         // 手动对echarts实例对象进行resize
@@ -150,6 +199,19 @@
   }
 </script>
 
-<style scoped>
-
+<style lang="less" scoped>
+  .title {
+    position: absolute;
+    left: 20px;
+    top: 20px;
+    z-index: 10;
+    color: white;
+    .title-icon {
+      margin-left: 10px;
+      cursor: pointer;
+    }
+    .select-con {
+      background-color: #222733;
+    }
+  }
 </style>
