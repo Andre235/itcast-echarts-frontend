@@ -13,6 +13,16 @@ const routes = [
     path: '/trend',
     name: '销售趋势',
     component: () => import('views/TrendPage.vue')
+  },
+  {
+    path: '/map',
+    name: '销售地图',
+    component: () => import('views/MapPage.vue')
+  },
+  {
+    path: '/rank',
+    name: '销售排行',
+    component: () => import('views/RankPage.vue')
   }
 ]
 
