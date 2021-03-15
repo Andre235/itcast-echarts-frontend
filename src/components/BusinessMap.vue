@@ -1,5 +1,5 @@
 <template>
-  <div class="com-container">
+  <div class="com-container" @dblclick="backToChina">
     <div class="com-chart" ref="chinaMap">
     </div>
   </div>
@@ -8,14 +8,15 @@
 <script>
   import axios from "axios";
   import chinaMap from "../../public/static/map/china.json";
+  import {getProvinceMapInfo} from '@/utils/map_utils'
 
   export default {
     name: "BusinessMap",
     data() {
       return {
-        chartInstance: null,
-        allData: null,
-        chinaMapData: null,
+        chartInstance: {},
+        allData: {},
+        chinaMapData: {},
       }
     },
     mounted() {
@@ -63,6 +64,23 @@
           }
         }
         this.chartInstance.setOption(initOption)
+
+        // chart对点击事件的监听
+        this.chartInstance.on('click', async (args) => {
+          const provinceMapInfo = getProvinceMapInfo(args.name);
+          if(!this.chinaMapData[provinceMapInfo.key]) {
+            // 获取这个省份的地图矢量数据
+            const {data: result} = await axios.get('http://localhost:8081' + provinceMapInfo.path)
+            this.chinaMapData[provinceMapInfo.key] = result
+            this.$echarts.registerMap(provinceMapInfo.key, result)
+            const changeOption = {
+              geo: {
+                map: provinceMapInfo.key
+              }
+            }
+            this.chartInstance.setOption(changeOption)
+          }
+        })
       },
 
       /**
@@ -129,6 +147,18 @@
 
         // 手动对echarts实例对象进行resize
         this.chartInstance.resize()
+      },
+
+      /**
+       * 回到中国地图
+       */
+      backToChina() {
+        const chinaOption = {
+          geo: {
+            map: 'china'
+          }
+        }
+        this.chartInstance.setOption(chinaOption)
       }
     }
   }
