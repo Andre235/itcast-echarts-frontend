@@ -94,7 +94,6 @@
         const seriesArray = showData.map((item, index) => {
           return {
             type: 'pie',
-            radius: [110, 100],
             center: centerPointArray[index], // 中心点坐标
             hoverAnimation: false, //关闭鼠标移入到饼图时的动画效果
             label: {
