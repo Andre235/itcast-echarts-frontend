@@ -28,6 +28,11 @@ const routes = [
     path: '/hot',
     name: '热销商品',
     component: () => import('views/HotPage.vue')
+  },
+  {
+    path: '/stock',
+    name: '库存商品',
+    component: () => import('views/StockPage.vue')
   }
 ]
 
