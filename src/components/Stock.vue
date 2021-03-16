@@ -1,6 +1,6 @@
 <template>
   <div class="com-container">
-    <div class="com-chart" ref='stock'>
+    <div class="com-chart" ref='stock_ref'>
       <span>库存商品</span>
     </div>
   </div>
@@ -38,7 +38,7 @@
        * 初始化图表
        */
       initChart() {
-        this.chartInstance = this.$echarts.init(this.$refs.stock, 'chalk')
+        this.chartInstance = this.$echarts.init(this.$refs.stock_ref, 'chalk')
         const initOption = {
           title: {
             text: '▎ 库存和销量分析',
@@ -107,7 +107,7 @@
             },
             data: [
               {
-                name: item.name + '\n' + item.sales,
+                name: item.name + '\n\n' + item.sales,
                 value: item.sales,
                 itemStyle: {
                   // color: new this.$echarts.
@@ -132,56 +132,54 @@
        * 适配屏幕分辨率
        */
       adaptScreen() {
-        const titleFontSize = this.$refs.stock.offsetWidth / 100 * 3.6
-        const outerRadius = titleFontSize * 2.8
-        const innerRadius = titleFontSize * 1.125
+        const titleFontSize = this.$refs.stock_ref.offsetWidth / 100 * 3.6
+        const innerRadius = titleFontSize * 2.8
+        const outterRadius = innerRadius * 1.125
         const adapterOption = {
           title: {
             textStyle: {
-              fontsize: titleFontSize
+              fontSize: titleFontSize
             }
           },
           series: [
             {
               type: 'pie',
-              radius: [outerRadius, innerRadius],
+              radius: [outterRadius, innerRadius],
               label: {
-                fontsize: titleFontSize / 2
+                fontSize: titleFontSize / 2
               }
             },
             {
               type: 'pie',
-              radius: [outerRadius, innerRadius],
+              radius: [outterRadius, innerRadius],
               label: {
-                fontsize: titleFontSize / 2
+                fontSize: titleFontSize / 2
               }
             },
             {
               type: 'pie',
-              radius: [outerRadius, innerRadius],
+              radius: [outterRadius, innerRadius],
               label: {
-                fontsize: titleFontSize / 2
+                fontSize: titleFontSize / 2
               }
             },
             {
               type: 'pie',
-              radius: [outerRadius, innerRadius],
+              radius: [outterRadius, innerRadius],
               label: {
-                fontsize: titleFontSize / 2
+                fontSize: titleFontSize / 2
               }
             },
             {
               type: 'pie',
-              radius: [outerRadius, innerRadius],
+              radius: [outterRadius, innerRadius],
               label: {
-                fontsize: titleFontSize / 2
+                fontSize: titleFontSize / 2
               }
             }
           ]
         }
         this.chartInstance.setOption(adapterOption)
-
-        // 手动对echarts实例对象进行resize
         this.chartInstance.resize()
       },
 

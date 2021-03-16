@@ -41,7 +41,7 @@
         // 配置初始化Option
         const initOption = {
           title: {
-            text: '商家销售统计',
+            text: '▎商家销售统计',
             textStyle: {
               fontSize: 66
             },

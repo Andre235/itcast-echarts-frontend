@@ -43,7 +43,7 @@
         this.$echarts.registerMap('china', chinaMap)
         const initOption = {
           title: {
-            text: '▎商家地图分布',
+            text: '▎数据中心分布',
             left: 20,
             top: 20,
           },

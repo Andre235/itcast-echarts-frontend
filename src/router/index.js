@@ -5,34 +5,13 @@ Vue.use(VueRouter)
 
 const routes = [
   {
-    path: '/seller',
-    name: '销售统计',
-    component: () => import('views/SellerPage.vue')
+    path: '/',
+    redirect: '/screen'
   },
   {
-    path: '/trend',
-    name: '销售趋势',
-    component: () => import('views/TrendPage.vue')
-  },
-  {
-    path: '/map',
-    name: '销售地图',
-    component: () => import('views/MapPage.vue')
-  },
-  {
-    path: '/rank',
-    name: '销售排行',
-    component: () => import('views/RankPage.vue')
-  },
-  {
-    path: '/hot',
-    name: '热销商品',
-    component: () => import('views/HotPage.vue')
-  },
-  {
-    path: '/stock',
-    name: '库存商品',
-    component: () => import('views/StockPage.vue')
+    path: '/screen',
+    name: '大屏',
+    component: () => import('views/ScreenPage.vue')
   }
 ]
 
