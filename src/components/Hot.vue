@@ -50,7 +50,7 @@
         this.chartInstance = this.$echarts.init(this.$refs.hot, 'chalk')
         const initOption = {
           title: {
-            text: '▎ 热销商品的占比',
+            text: '▎ 磁盘容量占比',
             left: 20,
             top: 20
           },

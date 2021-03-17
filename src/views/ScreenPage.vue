@@ -1,18 +1,18 @@
 <template>
   <div class="screen-container">
     <header class="screen-header">
-      <div>
-        <img src="/static/img/header_border_dark.png" alt="">
-      </div>
+<!--      <div>-->
+<!--        <img src="/static/img/header_border_dark.png" alt="">-->
+<!--      </div>-->
       <!--logo-->
-      <span class="logo">
-        <img src="/static/img/logo_dark.png" alt="">
-      </span>
+<!--      <span class="logo">-->
+<!--        <img src="/static/img/logo_dark.png" alt="">-->
+<!--      </span>-->
       <!--标题-->
       <span class="title">分布式存储运维监控系统</span>
       <div class="title-right">
-        <img src="/static/img/qiehuan_dark.png" alt="">
-        <span class="datetime">2021年3月16日22:22:56</span>
+<!--        <img src="/static/img/qiehuan_dark.png" alt="">-->
+        <span class="datetime">{{times}}</span>
       </div>
     </header>
 
@@ -20,7 +20,7 @@
       <section class="screen-left">
         <!--销量趋势图表-->
         <div id="left-top" :class="[fullScreenStatus.trend ? 'fullscreen' : '']">
-          <trend ref="trend"/>
+          <trend ref="trend" @keyup.esc.native="changeSize('rank')"/>
           <div class="resize">
             <span @click="changeSize('trend')" :class="['iconfont', fullScreenStatus.trend ? 'icon-compress-alt' : 'icon-expand-alt']"/>
           </div>
@@ -70,38 +70,46 @@
 </template>
 
 <script>
-  import BusinessMap from "@/components/BusinessMap";
-  import Hot from "@/components/Hot";
-  import Rank from "@/components/Rank";
-  import Seller from "@/components/Seller";
-  import Stock from "@/components/Stock";
-  import Trend from "@/components/Trend";
+import BusinessMap from "@/components/BusinessMap";
+import Hot from "@/components/Hot";
+import Rank from "@/components/Rank";
+import Seller from "@/components/Seller";
+import Stock from "@/components/Stock";
+import Trend from "@/components/Trend";
 
-  export default {
-    name: "ScreenPage",
-    components: {
-      BusinessMap,
-      Rank,
-      Hot,
-      Seller,
-      Stock,
-      Trend
-    },
-    data () {
-      return {
-        // 定义每一个图表的全屏状态
-        fullScreenStatus: {
-          trend: false,
-          seller: false,
-          businessMap: false,
-          rank: false,
-          hot: false,
-          stock: false
-        }
-      }
-    },
-    methods: {
-
+export default {
+  name: "ScreenPage",
+  components: {
+    BusinessMap,
+    Rank,
+    Hot,
+    Seller,
+    Stock,
+    Trend
+  },
+  data () {
+    return {
+      // 定义每一个图表的全屏状态
+      fullScreenStatus: {
+        trend: false,
+        seller: false,
+        businessMap: false,
+        rank: false,
+        hot: false,
+        stock: false
+      },
+      times: '', // 格式化之后的当前时间
+    }
+  },
+  created() {
+    this.getTimes()
+  },
+  destroyed() {
+    if (this.times) {
+      clearInterval(this.getTimesInterval);
+    }
+  },
+  methods: {
       /**
        * 全屏/退出全屏
        * @param chartName 组件名称
@@ -111,6 +119,32 @@
         this.$nextTick(() => {
           this.$refs[chartName].adaptScreen()
         })
+      },
+
+      getTimes(){
+        setInterval(this.getTimesInterval, 1000);
+      },
+
+      getTimesInterval: function () {
+        let _this = this;
+        let year = new Date().getFullYear(); //获取当前时间的年份
+        let month = new Date().getMonth() + 1; //获取当前时间的月份
+        let day = new Date().getDate(); //获取当前时间的天数
+        let hours = new Date().getHours(); //获取当前时间的小时
+        let minutes = new Date().getMinutes(); //获取当前时间的分数
+        let seconds = new Date().getSeconds(); //获取当前时间的秒数
+        //当小于 10 的是时候，在前面加 0
+        if (hours < 10) {
+          hours = "0" + hours;
+        }
+        if (minutes < 10) {
+          minutes = "0" + minutes;
+        }
+        if (seconds < 10) {
+          seconds = "0" + seconds;
+        }
+        //拼接格式化当前时间
+        this.times = year + "-" + month + "-" + day + " " + hours + ":" + minutes + ":" + seconds;
       }
     }
   }

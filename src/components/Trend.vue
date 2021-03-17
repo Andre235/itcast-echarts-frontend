@@ -1,14 +1,14 @@
 <template>
   <div class="com-container">
-    <div class="title" :style="titleStyle">
-      <span>{{showTitle}}</span>
-      <span class="iconfont title-icon" :style="titleStyle" @click="showChoice = !showChoice">&#xe6eb;</span>
-      <div class="select-con" v-show="showChoice">
-        <div class="select-item" v-for="item in selectTypes" :key="item.key" @click="handleSelectType(item)">
-          {{item.text}}
-        </div>
-      </div>
-    </div>
+<!--    <div class="title" :style="titleStyle">-->
+<!--      <span>{{showTitle}}</span>-->
+<!--      <span class="iconfont title-icon" :style="titleStyle" @click="showChoice = !showChoice">&#xe6eb;</span>-->
+<!--      <div class="select-con" v-show="showChoice">-->
+<!--        <div class="select-item" v-for="item in selectTypes" :key="item.key" @click="handleSelectType(item)">-->
+<!--          {{item.text}}-->
+<!--        </div>-->
+<!--      </div>-->
+<!--    </div>-->
     <div class="com-chart" ref="trend"/>
   </div>
 </template>
@@ -89,6 +89,11 @@
       initChart() {
         this.chartInstance = this.$echarts.init(this.$refs.trend, 'chalk')
         const initOption = {
+          title: {
+            text: '▎性能趋势分析',
+            left: 20,
+            top: 20
+          },
           xAxis: {
             type: 'category',
             boundaryGap: false // X轴是否需要间隙(紧挨着Y坐标轴)
@@ -194,6 +199,11 @@
         // 标题的大小
         this.titleFontSize = this.$refs.trend.offsetWidth / 100 * 3.6;
         const adapterOption = {
+          title: {
+            textStyle: {
+              fontSize: this.titleFontSize
+            }
+          },
           legend: {
             itemWidth: this.titleFontSize,
             itemHeight: this.titleFontSize,

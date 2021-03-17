@@ -49,7 +49,7 @@
             type: 'value' // 数值型
           },
           title: {
-            text: '▎地区销售排行',
+            text: '▎节点IOPS排行',
             left: 20,
             top: 20
           },

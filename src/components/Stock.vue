@@ -40,7 +40,7 @@
         this.chartInstance = this.$echarts.init(this.$refs.stock_ref, 'chalk')
         const initOption = {
           title: {
-            text: '▎ 库存和销量分析',
+            text: '▎ 硬件利用率分析',
             left: 20,
             top: 20
           }

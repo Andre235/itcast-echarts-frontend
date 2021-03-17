@@ -23,14 +23,14 @@
       this.initChart();
       this.getData();
       // 给windows添加resize事件监听器
-      window.addEventListener("resize", this.adapterScreen)
+      window.addEventListener("resize", this.adaptScreen)
       // 首次加载页面的时候，需要我们手动进行屏幕适配
-      this.adapterScreen()
+      this.adaptScreen()
     },
     destroyed() {
       clearInterval(this.timerId)
       // 当组件销毁的时候移除resize事件监听器，(防止内存泄漏)
-      window.removeEventListener('resize', this.adapterScreen)
+      window.removeEventListener('resize', this.adaptScreen)
     },
     methods: {
       /**
@@ -41,7 +41,7 @@
         // 配置初始化Option
         const initOption = {
           title: {
-            text: '▎商家销售统计',
+            text: '▎节点IOPS排行',
             textStyle: {
               fontSize: 66
             },
@@ -172,7 +172,7 @@
       /**
        * 当浏览器的大小发生变化时，会调用该方法来完成屏幕的适配
        */
-      adapterScreen() {
+      adaptScreen() {
         console.log(this.$refs.seller.offsetWidth);
         const fontSize = this.$refs.seller.offsetWidth / 100 * 3.6
         // 和分辨率大小相关的配置
